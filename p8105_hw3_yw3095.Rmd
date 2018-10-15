@@ -150,3 +150,102 @@ hw3_insta
 There are `r nrow(hw3_insta)` observations and `r ncol(hw3_insta)` variables in the instacart dataset.The key variables are product_id, user_id and asile_id. 
 ???????describing some key variables, and giving illstrative examples of observations. ??????
 
+**Questions**
+
+```{r}
+count(hw3_insta, aisle) %>% 
+  arrange(-n) %>% 
+  head(1)
+```
+* How many aisles are there, and which aisles are the most items ordered from?
+
+    * There are `r count(distinct(hw3_insta, aisle_id))` aisles in the instacart dataset. Fresh vegetables is the most items ordered from, and there are 150609 orders from fresh vegetables.
+    
+* Make a plot that shows the number of items ordered in each aisle. 
+```{r}
+aisle_plot =  group_by(hw3_insta, aisle) %>%
+  summarize(n = n()) %>%
+  ggplot(aes(x = aisle, y = n)) +
+  geom_boxplot()
+aisle_plot  
+```
+
+* Make a table showing the most popular item in each of the aisles “baking ingredients”, “dog food care”, and “packaged vegetables fruits”.  ??????the most popular item?????
+```{r}
+hw3_insta %>% 
+  filter(aisle == "baking ingredients" | aisle == "dog food care" | aisle == "packaged vegetables fruits") %>%      
+  group_by(aisle, product_name) %>%
+  summarize(n = n()) %>% 
+  arrange(-n, .by_group = TRUE)
+```
+
+* Make a table showing the mean hour of the day at which Pink Lady Apples and Coffee Ice Cream are ordered on each day of the week. ?????2x7??????
+```{r}
+hw3_insta %>% 
+  filter(product_name == "Pink Lady Apples" | product_name == "Coffee Ice Cream") %>%      
+  group_by(product_name, order_dow) %>%
+  summarize(mean_hour_of_day = mean(order_hour_of_day)) %>% 
+knitr::kable(digits = 1)
+```
+
+##Problem 3
+This problem uses the NY NOAA data.
+
+*   Read and clean the data  
+```{r}
+hw3_ny_noaa = ny_noaa %>% 
+  janitor::clean_names() %>% 
+  separate(date, into = c("year", "month", "day"), sep = "-") %>% 
+  mutate(tmax = as.numeric(tmax),
+         tmin = as.numeric(tmin),
+         tmin = tmin / 10,
+         tmax = tmax / 10)
+hw3_ny_noaa
+```
+
+**Description of the dataset**
+
+There are `r nrow(hw3_ny_noaa)` observations and `r ncol(hw3_ny_noaa)` variables in the instacart dataset.The key variables are product_id, user_id and asile_id. 
+???????describing some key variables, and giving illstrative examples of observations. ??????
+
+indicating the extent to which missing data is an issue. 
+
+**Questions**
+
+* For snowfall, what are the most commonly observed values? Why?
+
+    * For snowfall, `r which.max(table(hw3_ny_noaa$snow))` are the most commenly observed values. why????????
+    
+* Make a two-panel plot showing the average max temperature in January and in July in each station across years. Is there any observable / interpretable structure? Any outliers?
+```{r}
+hw3_ny_noaa %>% 
+  filter(month == 1 | month == 7) %>% 
+  group_by(id, year) %>% 
+  summarise(mean_tmax = mean(tmax)) %>% 
+  ggplot(aes(x = date, y = mean_tax)) +
+  geom_point(aes(color = id, alpha = .5)) +
+  facet_grid(~month) +
+  viridis::scale_color_viridis(
+    name = "Station", 
+    discrete = TRUE
+  )
+```
+
+* Make a two-panel plot showing (i) tmax vs tmin for the full dataset (note that a scatterplot may not be the best option); and (ii) make a plot showing the distribution of snowfall values greater than 0 and less than 100 separately by year.
+```{r}
+t_plot = select(hw3_ny_noaa, date, tmax, tmin) %>% 
+  ggplot(aes(x = date, fill = observation)) +
+  geom_density(alpha = .5) + 
+  facet_grid(~name) + 
+  viridis::scale_fill_viridis(discrete = TRUE)
+
+```
+```{r}
+snow_plot = filter(hw3_ny_noaa, snow > 0 & snow < 100) %>% 
+  ggplot(aes(x = snow, y = year)) +
+  geom_density_ridges(scale = .85) 
+snow_plot
+```
+
+
+
