@@ -30,21 +30,22 @@ hw3_brfss = brfss_smart2010 %>%
 ```
 **Questions**
 
-*Question 1: In 2002, which states were observed at 7 locations?
+*   Question 1: In 2002, which states were observed at 7 locations?
 ```{r 1.2}
 hw3_1 = filter(hw3_brfss, year == 2002) %>%
   group_by(state) %>%  
   summarize(n_obs = n_distinct(county))
 hw3_1 %>%
-  filter(n_obs == 7)
+  filter(n_obs == 7) %>% 
+  knitr::kable()
 skimr::skim(hw3_1)
 ```
 
-**Answer: **
+**Answer and Comment: **
 
 States CT, FL, and NC were observed at 7 locations. There were 49 states observed in 2002. Among these states, the mean value of the number of locations was 3.2, and the standard deviation was 2.21. The upper quartile was 4, so these three states which were observed 7 locations were in the first quartile of the dataset.
    
-*Question 2: Make a “spaghetti plot” that shows the number of locations in each state from 2002 to 2010.
+*   Question 2: Make a “spaghetti plot” that shows the number of locations in each state from 2002 to 2010.
 
 ```{r 1.3}
 hw3_brfss %>% 
@@ -53,9 +54,9 @@ hw3_brfss %>%
   ggplot(aes(x = year, y = n)) +
   geom_line(aes(color = state)) + 
   labs(
-    title = "Number of locations in each state from 2002 to 2010",
+    title = "Number of Locations in each state from 2002 to 2010",
     x = "Year",
-    y = "Number of locations",
+    y = "Number of Locations",
     caption = "Data from the p8105.datasets package"
   ) 
 ```
@@ -64,13 +65,15 @@ hw3_brfss %>%
   group_by(year, state) %>%  
   summarize(n = n_distinct(county)) %>% 
   arrange(-n) %>% 
+  head(10) %>% 
   knitr::kable()
 ```
+
 **Comment:**
 
 Because there were too many states in one plot, it was hard to tell each line. From the summarized table, we can know that most states have the similar trends. The number of locations in each state from 2002 to 2010 mainly lied between 0 to 10, while FL had two peaks and the peak values were 44 and 41. 
 
-*Question 3: Make a table showing, for the years 2002, 2006, and 2010, the mean and standard deviation of the proportion of “Excellent” responses across locations in NY State.
+*   Question 3: Make a table showing, for the years 2002, 2006, and 2010, the mean and standard deviation of the proportion of “Excellent” responses across locations in NY State.
 
 ```{r 1.5}
 hw3_brfss %>% 
@@ -82,20 +85,21 @@ hw3_brfss %>%
             sd_excellent = sd(data_value, na.rm = TRUE)) %>%
   knitr::kable(digits = 1)
 ```
+
 **Comment:** 
 
 From the table, we can know that:
-Erie County in NY had the lowest mean value of "excellent" proportion, which is 17.2; 
-New York County had the highest mean value of "excellent" proportion, which is 27.5; 
-Monroe County was the median value of the "excellent" proportion, which is 22.4.
+  Erie County in NY had the lowest mean value of "excellent" proportion, which is 17.2; 
+  New York County had the highest mean value of "excellent" proportion, which is 27.5; 
+  Monroe County was the median value of the "excellent" proportion, which is 22.4.
 
 For the standard deviation of "excellent" proportion, we found that:
-There was 3 NA value in our table as there was only one observations for this county in 2002, 2006 or 2010. We cannot get the standard deviation of "excellent" proportion for those counties.
-Nassau County had the largest standard deviation, which is 2.8;
-Westchester County had the least standard deviation, which is 0.6.
+  There was 3 NA value in our table as there was only one observations for this county in 2002, 2006 or 2010. We cannot get the standard deviation of "excellent" proportion for those counties.
+  Nassau County had the largest standard deviation, which is 2.8;
+  Westchester County had the least standard deviation, which is 0.6.
 
 
-*Question 4: For each year and state, compute the average proportion in each response category (taking the average across locations in a state). Make a five-panel plot that shows, for each response category separately, the distribution of these state-level averages over time.
+*   Question 4: For each year and state, compute the average proportion in each response category (taking the average across locations in a state). Make a five-panel plot that shows, for each response category separately, the distribution of these state-level averages over time.
 
 ```{r 1.6}
 hw3_brfss %>%
@@ -106,9 +110,9 @@ hw3_brfss %>%
   geom_line(aes(color = state), alpha = .5) +
   facet_grid(.~response) + 
   labs(
-    title = "The average proportion in each response for each year and state",
+    title = "The Average Proportion in each Response for each Year and State",
     x = "Year",
-    y = "The average proportion",
+    y = "The Average Proportion",
     caption = "Data from the p8105.datasets package"
   ) +
   theme(legend.position = "none",axis.text.x = element_text(angle = 45))
@@ -135,18 +139,19 @@ There were `r nrow(hw3_insta)` observations and `r ncol(hw3_insta)` variables in
 
 **Questions**
 
-*Question 1: How many aisles are there, and which aisles are the most items ordered from?
+*   Question 1: How many aisles are there, and which aisles are the most items ordered from?
 ```{r 2.2}
 count(hw3_insta, aisle) %>% 
   arrange(-n) %>% 
   head(5) %>% 
   knitr::kable()
 ```
+
 **Answer:** 
 
 There are `r count(distinct(hw3_insta, aisle_id))` aisles in the instacart dataset. Fresh vegetables is the most items ordered from, and there are 150609 orders from fresh vegetables. The following popular items were fresh fruits, pachaged vagetables fruits, yogurt, and packaged cheese. From the results, we can know that people are more likely to buy fresh vegetables or fruits rather than packaged ones, which indicating a health life style.
-    
-*Question 2: Make a plot that shows the number of items ordered in each aisle. 
+     
+*   Question 2: Make a plot that shows the number of items ordered in each aisle. 
 ```{r 2.3, fig.width=10, fig.height=20}
 hw3_insta %>%
   group_by(aisle) %>%
@@ -162,11 +167,12 @@ hw3_insta %>%
       y = "Number of Items Ordered"
       )
 ```
+
 **Comment:**
 
 After ranking the total number of items, we found that the shape of the line plot was like a "J". Nearly, one third of the aisles had less than 2000 ordered item, another one third of the aisles had ordered items from 2000 to 10000, while the other one third of the aisles had ordered items from 20000 to 80000. The aisles "fresh fruits" and "fresh vegetables" even had more than 150000 ordered items.
 
-*Question 3: Make a table showing the most popular item in each of the aisles “baking ingredients”, “dog food care”, and “packaged vegetables fruits”.
+*   Question 3: Make a table showing the most popular item in each of the aisles “baking ingredients”, “dog food care”, and “packaged vegetables fruits”.
 ```{r 2.4}
 hw3_insta %>% 
   filter(aisle == "baking ingredients" | aisle == "dog food care" | aisle == "packaged vegetables fruits") %>%      
@@ -176,6 +182,7 @@ hw3_insta %>%
   filter(row_number() == 1) %>% 
   knitr::kable()
 ```
+
 **Answer:**
 
 In aisle “baking ingredients”, the most popular item was "Light Brown Sugar", which had been ordered 499 times.
@@ -184,7 +191,7 @@ In aisle “packaged vegetables fruits”, the most popular item was "Organic Ba
 
 As these three items are the most popular items in these three aisles, the staff should prepare these goods in advance in case they were out of stock or customers cannot get their order in time. 
 
-* Question 4: Make a table showing the mean hour of the day at which Pink Lady Apples and Coffee Ice Cream are ordered on each day of the week. 
+*   Question 4: Make a table showing the mean hour of the day at which Pink Lady Apples and Coffee Ice Cream are ordered on each day of the week. 
 ```{r 2.5}
 hw3_insta %>% 
   filter(product_name == "Pink Lady Apples" | product_name == "Coffee Ice Cream") %>%      
@@ -220,12 +227,13 @@ There are `r nrow(hw3_ny_noaa)` observations and `r ncol(hw3_ny_noaa)` variables
 
 **Questions**
 
-*Question 1: For snowfall, what are the most commonly observed values? Why? 
+*   Question 1: For snowfall, what are the most commonly observed values? Why? 
 
 ```{r 3.2}
 hw3_ny_noaa %>% 
   count(snow) %>% 
-  arrange(-n) %>% 
+  arrange(-n) %>%
+  head(5) %>% 
   knitr::kable()
 ```
 
@@ -233,8 +241,8 @@ hw3_ny_noaa %>%
 
 For snowfall, 0 are the most commonly observed values. In NY, snowfall only occurs in winter seasonally. So most of the time in a year there will not be snowfalls. Even in winter, the days with snowfalls were less than sunny day or rainny days.
     
-*Question 2: Make a two-panel plot showing the average max temperature in January and in July in each station across years. Is there any observable / interpretable structure? Any outliers?
-```{r 3.3}
+*   Question 2: Make a two-panel plot showing the average max temperature in January and in July in each station across years. Is there any observable / interpretable structure? Any outliers?
+```{r 3.3, fig.width=10, fig.height=5}
 hw3_ny_noaa %>% 
   filter(month == "01" | month == "07") %>%
   filter(!is.na(tmax)) %>% 
@@ -246,9 +254,9 @@ hw3_ny_noaa %>%
   theme(axis.text.x = element_text(face = "plain", color = "black", 
                            size = 7, angle = 45), legend.position = "none") +
   labs(
-    title = "Average max temperature in January and July in each station from 1981 to 2010",
+    title = "Average Max Temperature in January and July in each Station from 1981 to 2010",
     x = "Year",
-    y = "Average max temperature (degrees C)"
+    y = "Average Max Temperature (degrees C)"
   )
 ```
 
@@ -259,24 +267,23 @@ In July, most of the max temperature lies between 22˚C to 32˚C, and the averag
 
 There are quite a few outliers in January and July in each year. The max temperature in July 1987 was an extermely outliers, which was less than 15˚C much lower than other years.
 
-*Question 3: Make a two-panel plot showing (i) tmax vs tmin for the full dataset (note that a scatterplot may not be the best option); and (ii) make a plot showing the distribution of snowfall values greater than 0 and less than 100 separately by year.
-```{r 3.4}
+*   Question 3: Make a two-panel plot showing (i) tmax vs tmin for the full dataset (note that a scatterplot may not be the best option); and (ii) make a plot showing the distribution of snowfall values greater than 0 and less than 100 separately by year.
+```{r 3.4, fig.width=20, fig.height=10, message=FALSE}
 plot_1 = ggplot(hw3_ny_noaa, aes(x = tmax, y = tmin)) +
   geom_hex() + 
-  theme(legend.position = "bottom") +
   labs(
-    title = "hexagonal heatmap of maximum temperature vs. minimum temperature",
-    x = "maximum temperature",
-    y = "minimum temperature"
+    title = "Hexagonal Heatmap of Maximum Temperature vs. Minimum Temperature",
+    x = "Maximum temperature (degrees C)",
+    y = "Minimum temperature (degrees C)"
   )
 
 plot_2 =  filter(hw3_ny_noaa, snow > 0 & snow < 100) %>% 
   ggplot(aes(x = snow, y = year)) +
   geom_density_ridges(scale = .85) +
   labs(
-    title = "Density plot of snowfall from 0 mm to 100 mm across years",
-    x = "snow fall (mm)",
-    y = "year"
+    title = "Density Plot of Snowfall from 0 mm to 100 mm across Years",
+    x = "Snow fall (mm)",
+    y = "Year"
   )
 
 plot_1 + plot_2
@@ -284,7 +291,9 @@ plot_1 + plot_2
 
 **Comment:**
 
+For the hexagonal heatmap, we can know that the light blue means high desity, and it seems like there was a positive linear relationship between maximum temperature and minimum temperature across years.
 
+For the desity plot, we can know that the snow fall desity was similar across years. There are four peaks in a year: lied around 10mm, 30mm, 50mm, and 70mm. The peak at around 10mm had the highest density, and the peak at around 70mm had the lowest density.
 
 
 
